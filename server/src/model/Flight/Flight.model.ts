@@ -3,8 +3,10 @@ import Flight from '../../controllers/Flight/Flight.interface';
 
 const flightSchema = new mongoose.Schema({
     id: Number,
-    from: String,
-    to: String,
+    fromCountry: String,
+    fromCity: String,
+    toCountry: String,
+    toCity: String,
     date: String,
     price: Number,
     availableSeats: Number,

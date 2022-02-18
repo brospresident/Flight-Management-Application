@@ -28,6 +28,8 @@ class UserController implements IController {
         if (!resp) {
             next(new UserNotFound(name));
         }
+
+        return res.status(200).json(resp);
     }
 }
 
