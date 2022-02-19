@@ -13,4 +13,4 @@ const flightSchema = new mongoose.Schema({
     reservedSeats: Number
 });
 
-export default mongoose.model<Flight>('Flight', flightSchema);
+export default mongoose.model<Flight & mongoose.Document>('Flight', flightSchema);

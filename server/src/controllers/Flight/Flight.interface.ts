@@ -7,5 +7,5 @@ export default interface Flight {
     date: string;
     price: number;
     availableSeats: number;
-    reservedSeats: number;
+    reservedSeats?: number;
 }

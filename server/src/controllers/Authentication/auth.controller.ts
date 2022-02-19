@@ -57,7 +57,7 @@ class AuthController implements IController {
         });
         newUser.password = '';
         const tokenData: TokenData = this.generateToken(newUser);
-        res.setHeader('Set-Cookie', [`Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
+        res.setHeader('Set-Cookie', [`Authorization ${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
         res.status(200).json(newUser);
     }
 
@@ -74,7 +74,7 @@ class AuthController implements IController {
         else if (await bcrypt.compare(data.password, user.password)) {
             user.password = '';
             const tokenData: TokenData = this.generateToken(user);
-            res.setHeader('Set-Cookie', [`Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
+            res.setHeader('Set-Cookie', [`Authorization ${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
             res.status(200).json(user);
         }
         else {

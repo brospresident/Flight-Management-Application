@@ -1,5 +1,5 @@
 import IController from "../controller";
-import express, { Router } from 'express';
+import express from 'express';
 import FlightModel from "../../model/Flight/Flight.model";
 import FlightNotFound from "../../exceptions/FlightNoFound";
 import Flight from './Flight.interface';
@@ -16,8 +16,8 @@ class FlightController implements IController {
     }
 
     private initRoutes() {
-        this.router.get('/', this.getFlightInformation);
-        this.router.post('/', this.createFlight);
+        this.router.get(`${this.path}/`, this.getFlightInformation);
+        this.router.post(`${this.path}/`, this.createFlight);
     }
 
     private async getFlightInformation(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -34,37 +34,26 @@ class FlightController implements IController {
         });
 
         if (!response) {
-            return next(new FlightNotFound());
+            next(new FlightNotFound());
         }
 
         return response;
     }
 
-    private async createFlight(req: express.Request<Flight>, res: express.Response, next: express.NextFunction) {
+    private async createFlight(req: express.Request, res: express.Response, next: express.NextFunction) {
         const data: Flight = req.body;
-        if (this.checkDate(data.date) == false) {
+        data.reservedSeats = 0;
+
+        const now = new Date();
+        const flightDate = new Date(data.date);
+
+        if (flightDate.getTime() < now.getTime()) {
             return next(new DateInPast());
         }
-
+        
         const newFlight = await FlightModel.create(data);
 
         return res.status(200).json(newFlight);
-    }
-
-    private checkDate(date: string): boolean {
-        try {
-            const now = new Date();
-            const dateToCheck = new Date(date);
-
-            if (dateToCheck.getTime() < now.getTime()) {
-                throw "Date is in the past";
-            }
-        }
-        catch (e) {
-            return false;
-        }
-
-        return true;
     }
 }
 
