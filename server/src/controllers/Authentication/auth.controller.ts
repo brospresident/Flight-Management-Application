@@ -5,25 +5,19 @@ import UserAlreadyExists from '../../exceptions/UserAlreadyExists';
 import UserNotFound from '../../exceptions/UserNotFound';
 import UserInvalid from '../../exceptions/UserInvalid';
 import { HASH_ROUNDS } from '../../utils/EnvLoader';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../../utils/EnvLoader';
 import User from '../User/user.interface';
 import userModel from '../../model/User/user.model';
-
-interface TokenData {
-    expiresIn: number;
-    token: string;
-}
-
-interface DataInsideToken {
-    username: string;
-}
+import {
+    TokenData,
+    JWT
+} from '../../utils/JWT';
 
 class AuthController implements IController {
     public path = '/auth';
     public router = express.Router();
 
     private readonly UserModel = userModel;
+    private readonly jwt: JWT = JWT.getInstance();
     
     public constructor () {
         this.initRoutes();
@@ -56,7 +50,7 @@ class AuthController implements IController {
             reservedFlights: []
         });
         newUser.password = '';
-        const tokenData: TokenData = this.generateToken(newUser);
+        const tokenData: TokenData = this.jwt.generateToken(newUser);
         res.setHeader('Set-Cookie', [`Authorization ${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
         res.status(200).json(newUser);
     }
@@ -73,7 +67,7 @@ class AuthController implements IController {
         }
         else if (await bcrypt.compare(data.password, user.password)) {
             user.password = '';
-            const tokenData: TokenData = this.generateToken(user);
+            const tokenData: TokenData = this.jwt.generateToken(user);
             res.setHeader('Set-Cookie', [`Authorization ${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`]);
             res.status(200).json(user);
         }
@@ -82,18 +76,7 @@ class AuthController implements IController {
         }
     }
 
-    private generateToken = (user: User): TokenData => {
-        const expiresIn = 360;
-        const tokenData: DataInsideToken = {
-            username: user.username
-        };
-
-        const token: TokenData = {
-            expiresIn,
-            token: jwt.sign(tokenData, JWT_SECRET, { expiresIn })
-        }
-        return token;
-    }
+    
 }
 
 export default AuthController;

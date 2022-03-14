@@ -35,6 +35,8 @@ class UserController implements IController {
 
     private addFunds = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const headers = req.headers;
+        const auth = headers.authorization;
+        
     }
 }
 
